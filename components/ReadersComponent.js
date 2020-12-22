@@ -8,8 +8,10 @@ function Readers(props) {
         return (
             <ListItem
                 title={item.title}
-                subtitle={item.description}
-                leftAvatar={{ source: require(item.image)}}
+                subtitle={`by ${item.author}  /  ${item.category}`}
+                leftAvatar={{ source: { uri: item.image }}}
+                onPress={() => props.onPress(item.id)}
+                bottomDivider
             />
         );
     };
