@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList } from 'react-native';
+import { Text, View, ScrollView, FlatList, StyleSheet } from 'react-native';
 import { Card, Rating, Icon } from 'react-native-elements';
 import { BOOKS } from '../shared/books';
 import { COMMENTS } from '../shared/comments';
@@ -25,7 +25,8 @@ function RenderComments({comments}) {
     );
 }
 
-function RenderBook({book}) {
+function RenderBook(props) {
+    const {book} = props;
     if (book) {
         return (
             <ScrollView>
@@ -37,22 +38,65 @@ function RenderBook({book}) {
                         overflow: 'hidden',
                     }}
                 >
-                    <Text style={{
-                            marginLeft: 10,
-                            fontStyle: 'italic',
-                            fontWeight: 'bold',
-                        }}>
-                        by {book.author}
-                    </Text>
-                    <Text style={{
-                            marginLeft: 10,
-                            fontStyle: 'italic',
-                        }}>
-                        {book.category}
-                    </Text>
-                    <Text style={{margin: 10}}>
-                        {book.description}
-                    </Text>
+                    <View style={{flexDirection: 'row',}}>
+                        <View style={{flex: 2}}>
+                            <Text style={{
+                                marginLeft: 10,
+                                fontStyle: 'italic',
+                                fontWeight: 'bold',
+                            }}>
+                            by {book.author}
+                            </Text>
+                            <Text style={{
+                                    marginLeft: 10,
+                                    fontStyle: 'italic',
+                                }}>
+                                {book.category}
+                            </Text>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <View style={styles.cardRow}>
+                                <Icon
+                                    name={props.favorite ? 'heart' : 'heart-o'}
+                                    type='font-awesome'
+                                    color='#f50'
+                                    raised
+                                    reverse
+                                    onPress={() => props.favorite ? 
+                                        console.log('Already set as a favorite') : props.markFavorite()}
+                                    iconStyle={styles.actionIcon}
+                                    size={12}
+                                />
+                                <Icon
+                                    name={'star'}
+                                    type='font-awesome'
+                                    color='#FFD300'
+                                    raised
+                                    reverse
+                                    onPress={() => props.favorite ? 
+                                        console.log('Already set as a favorite') : props.markFavorite()}
+                                    iconStyle={styles.actionIcon}
+                                    size={12}
+                                />
+                                <Icon
+                                    name={'pencil'}
+                                    type='font-awesome'
+                                    color='#006c80'
+                                    raised
+                                    reverse
+                                    onPress={() => props.favorite ? 
+                                        console.log('Already set as a favorite') : props.markFavorite()}
+                                    iconStyle={styles.actionIcon}
+                                    size={12}
+                                />
+                            </View>
+                        </View>
+                    </View>
+                    <View>
+                        <Text style={{margin: 10}}>
+                            {book.description}
+                        </Text>
+                    </View>
                 </Card>
             </ScrollView>
         );
@@ -71,46 +115,71 @@ function RenderMoreDetails(props) {
                 title={`Further details about ${book.title}:`}
                 >
                     <View>
-                        <Text style={{
-                                marginLeft: 10,
-                                fontStyle: 'italic',
-                                fontWeight: 'bold',
-                            }}>
-                            Length:
-                        </Text>
-                    </View>
-                    <View>
-                        <Text style={{
-                                marginLeft: 10,
-                                fontStyle: 'italic',
-                                fontWeight: 'bold',
-                            }}>
-                            Rating:
-                        </Text>
-                        <Rating 
-                            startingValue={book.rating}
-                            imageSize={20}
-                            readonly
-                            style={{alignItems: 'flex-start', padding: 10}}
-                            ratingCount={5}
-                            type='heart'
-                        />
+                        <View style={styles.cardRow}>
                             <Text style={{
-                                marginLeft: 10,
-                            }}>
-                            ({book.ratingCount} ratings)
-                        </Text>
-                    </View>
-                    <View>
-                    <Icon
-                        name={props.favorite ? 'heart' : 'heart-o'}
-                        type='font-awesome'
-                        color='#f50'
-                        raised
-                        reverse
-                        onPress={() => props.favorite ? 
-                            console.log('Already set as a favorite') : props.markFavorite()}
-                    />
+                                    marginLeft: 10,
+                                    fontStyle: 'italic',
+                                    fontWeight: 'bold',
+                                }}>
+                                Publish Date:
+                            </Text>
+                            <Text style={{
+                                    marginLeft: 10,
+                                }}>
+                                {book.release}
+                            </Text>
+                        </View>
+                        <View style={styles.cardRow}>
+                            <Text style={{
+                                    marginLeft: 10,
+                                    fontStyle: 'italic',
+                                    fontWeight: 'bold',
+                                }}>
+                                Length:
+                            </Text>
+                            <Text style={{
+                                    marginLeft: 10,
+                                }}>
+                                {book.length} pages
+                            </Text>
+                        </View>
+                        <View style={styles.cardRow}>
+                            <Text style={{
+                                    marginLeft: 10,
+                                    fontStyle: 'italic',
+                                    fontWeight: 'bold',
+                                }}>
+                                Language:
+                            </Text>
+                            <Text style={{
+                                    marginLeft: 10,
+                                }}>
+                                {book.language}
+                            </Text>
+                        </View>
+                        <View style={styles.cardRow}>
+                            <Text style={{
+                                    marginLeft: 10,
+                                    fontStyle: 'italic',
+                                    fontWeight: 'bold',
+                                }}>
+                                Rating:
+                            </Text>
+                            <Rating 
+                                startingValue={book.rating}
+                                imageSize={20}
+                                type= "custom"
+                                readonly
+                                ratingColor= "#FFD300"
+                                style={{alignItems: 'flex-start', marginLeft: 10}}
+                                ratingCount={5}
+                            />
+                                <Text style={{
+                                    marginLeft: 10,
+                                }}>
+                                ({book.ratingCount} ratings)
+                            </Text>
+                        </View>
                     </View>
                 </Card>
             </ScrollView>
@@ -156,6 +225,16 @@ class BookInfo extends Component {
     }
 }
 
-
+const styles = StyleSheet.create({
+    cardRow: {
+        alignSelf: 'flex-start',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        flex: 1,
+        marginBottom: 5,
+    },
+    actionIcon: {
+    },
+});
 
 export default BookInfo;
