@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList, StyleSheet } from 'react-native';
-import { Card, Rating, Icon } from 'react-native-elements';
+import { Text, View, ScrollView, FlatList, StyleSheet, Button, Modal } from 'react-native';
+import { Card, Rating, Icon, Input } from 'react-native-elements';
 import { BOOKS } from '../shared/books';
 import { COMMENTS } from '../shared/comments';
 
-function RenderComments({comments}) {
+function RenderComments(props) {
+    const {comments} = props;
+    const {trueComments} = props;
     const renderCommentItem = ({item}) => {
         return (
             <View style={{margin: 10}}>
@@ -17,7 +19,7 @@ function RenderComments({comments}) {
     return (
         <Card title='Recent Comments'>
             <FlatList
-                data={comments}
+                data={trueComments}
                 renderItem={renderCommentItem}
                 keyExtractor={item => item.id.toString()}
             />
@@ -64,17 +66,15 @@ function RenderBook(props) {
                                     reverse
                                     onPress={() => props.favorite ? 
                                         console.log('Already set as a favorite') : props.markFavorite()}
-                                    iconStyle={styles.actionIcon}
                                     size={12}
-                                />
+                                    />
                                 <Icon
                                     name={'star'}
                                     type='font-awesome'
                                     color='#FFD300'
                                     raised
                                     reverse
-                                    onPress={() => props.favorite ? 
-                                        console.log('Already set as a favorite') : props.markFavorite()}
+                                    onPress={() => props.onShowRatingModal()}
                                     iconStyle={styles.actionIcon}
                                     size={12}
                                 />
@@ -84,8 +84,7 @@ function RenderBook(props) {
                                     color='#006c80'
                                     raised
                                     reverse
-                                    onPress={() => props.favorite ? 
-                                        console.log('Already set as a favorite') : props.markFavorite()}
+                                    onPress={() => props.onShowCommentModal()}
                                     iconStyle={styles.actionIcon}
                                     size={12}
                                 />
@@ -107,6 +106,7 @@ function RenderBook(props) {
 function RenderMoreDetails(props) {
     
     const {book} = props;
+    const {ratingIncrement} = props;
     
     if (book) {
         return (
@@ -177,7 +177,7 @@ function RenderMoreDetails(props) {
                                 <Text style={{
                                     marginLeft: 10,
                                 }}>
-                                ({book.ratingCount} ratings)
+                                {ratingIncrement} ratings
                             </Text>
                         </View>
                     </View>
@@ -196,11 +196,70 @@ class BookInfo extends Component {
             books: BOOKS,
             comments: COMMENTS,
             favorite: false,
+            showRatingModal: false,
+            showCommentModal: false,
+            rating: 5,
+            ratingAuthor: "",
+            commentAuthor: "",
+            newComments: COMMENTS,
+            text: "",
+            ratingIncrement: 0,
         };
     }
 
     markFavorite() {
         this.setState({favorite: true});
+    }
+
+    toggleRatingModal() {
+        this.setState({showRatingModal: !this.state.showRatingModal});
+    }
+
+    toggleCommentModal() {
+        this.setState({showCommentModal: !this.state.showCommentModal});
+    }
+
+    handleRating (bookId) {
+        console.log(JSON.stringify(bookId));
+        console.log(JSON.stringify(this.state.ratingAuthor));
+        console.log(JSON.stringify(this.state.rating));
+        this.setState({
+            ratingIncrement: this.state.ratingIncrement + 1,
+        });
+        this.toggleRatingModal();
+    }
+
+    handleComment(bookId) {
+        console.log(JSON.stringify(bookId));
+        console.log(JSON.stringify(this.state.commentAuthor));
+        console.log(JSON.stringify(this.state.text));
+        const newComment = {
+            id: this.state.comments.length,
+            bookId: bookId,
+            text: this.state.text,
+            author: this.state.commentAuthor,
+            date: new Date(),
+        }
+        this.setState({ 
+            newComments: this.state.newComments.concat(newComment)
+        });
+        this.toggleCommentModal();
+    }
+
+    resetRatingForm() {
+        this.setState({
+            author: "",
+            rating: 5,
+            showModal: false,
+        });
+    }
+
+    resetCommentForm() {
+        this.setState({
+            author: "",
+            text: "",
+            showModal: false,
+        });
     }
 
     static navigationOptions = {
@@ -210,16 +269,138 @@ class BookInfo extends Component {
     render() {
         const bookId = this.props.navigation.getParam('bookId');
         const book = this.state.books.filter(book => book.id === bookId)[0];
-        const comments = this.state.comments.filter(comment => comment.bookId === bookId)
+        const comments = this.state.comments.filter(comment => comment.bookId === bookId);
+        const ratingIncrement = ((this.state.books.filter(book => book.id === bookId)[0].ratingCount) + (this.state.ratingIncrement));
+        const trueComments = this.state.newComments.filter(comment => comment.bookId === bookId);
         return (
             <ScrollView>
-                <RenderBook book={book} />
-                <RenderMoreDetails 
+                <RenderBook 
                     book={book}
                     favorite={this.state.favorite}
                     markFavorite={() => this.markFavorite()} 
+                    onShowRatingModal={() => this.toggleRatingModal()}
+                    onShowCommentModal={() => this.toggleCommentModal()}
                 />
-                <RenderComments comments={comments} />
+                <RenderMoreDetails 
+                    book={book}
+                    ratingIncrement={ratingIncrement}
+                />
+                <RenderComments 
+                    comments={comments}
+                    trueComments={trueComments} 
+                />
+
+
+                <Modal 
+                    animationType={'slide'}
+                    transparent={false}
+                    visible={this.state.showRatingModal}
+                    onRequestClose={() => this.toggleRatingModal}
+                >
+                    <View style={styles.modal}>
+                        <Input
+                            placeholder="Author"
+                            leftIcon={
+                                <Icon
+                                    name={'user-o'}
+                                    type='font-awesome'
+                                    color='#f50'
+                                />
+                            }
+                            leftIconContainerStyle={{paddingRight: 10}}
+                            onChangeText={ratingAuthor => this.setState({ratingAuthor: ratingAuthor})}
+                            value={this.state.ratingAuthor}
+                        />
+                        <Rating
+                            showRating
+                            startingValue={this.state.rating}
+                            imageSize={40}
+                            onFinishRating={rating => this.setState({rating: rating})}
+                            style={{paddingVertical: 10}}
+                            fractions={1}
+                            type={'heart'}
+                        />
+                        <View style={{margin: 10}}>
+                            <Button 
+                                onPress={() => {
+                                    this.resetRatingForm();
+                                    this.handleRating(bookId);
+                                }}
+                                color='#5637DD'
+                                title='Submit'
+                            />
+                        </View>
+                        <View style={{margin: 10}}>
+                            <Button 
+                                onPress={() => {
+                                    this.toggleRatingModal();
+                                    this.resetRatingForm();
+                                }}
+                                color='#808080'
+                                title='Cancel'
+                            />
+                        </View>
+                    </View>
+                </Modal>
+
+
+                <Modal 
+                    animationType={'slide'}
+                    transparent={false}
+                    visible={this.state.showCommentModal}
+                    onRequestClose={() => this.toggleCommentModal}
+                >
+                    <View style={styles.modal}>
+                        <Input
+                            placeholder="Author"
+                            leftIcon={
+                                <Icon
+                                    name={'user-o'}
+                                    type='font-awesome'
+                                    color='#f50'
+                                />
+                            }
+                            leftIconContainerStyle={{paddingRight: 10}}
+                            onChangeText={commentAuthor => this.setState({commentAuthor: commentAuthor})}
+                            value={this.state.commentAuthor}
+                        />
+                        <Input
+                            placeholder="Comment"
+                            leftIcon={
+                                <Icon
+                                    name={'comment-o'}
+                                    type='font-awesome'
+                                    color='#f50'
+                                />
+                            }
+                            leftIconContainerStyle={{paddingRight: 10}}
+                            onChangeText={text => this.setState({text: text})}
+                            value={this.state.text}
+                        />
+                        <View style={{margin: 10}}>
+                            <Button 
+                                onPress={() => {
+                                    this.resetCommentForm();
+                                    this.handleComment(bookId);
+                                }}
+                                color='#5637DD'
+                                title='Submit'
+                            />
+                        </View>
+                        <View style={{margin: 10}}>
+                            <Button 
+                                onPress={() => {
+                                    this.toggleCommentModal();
+                                    this.resetCommentForm();
+                                }}
+                                color='#808080'
+                                title='Cancel'
+                            />
+                        </View>
+                    </View>
+                </Modal>
+
+
             </ScrollView>
         )
     }
@@ -234,6 +415,10 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     actionIcon: {
+    },
+    modal: {
+        justifyContent: 'center',
+        margin: 20,
     },
 });
 

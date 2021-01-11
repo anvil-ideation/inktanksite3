@@ -3,11 +3,35 @@ import { View, Platform, StyleSheet, Text, Image, ScrollView, ImageBackground } 
 import { Icon } from 'react-native-elements';
 import Readers from './ReadersComponent';
 import BookInfo from './BookInfoComponent';
+import Demo from './Demo';
 import Home from './HomeComponent';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import SafeAreaView from 'react-native-safe-area-view';
+
+const DemoNavigator = createStackNavigator(
+    {
+        Home: { screen: Demo }
+    },
+    {
+        defaultNavigationOptions: ({navigation}) => ({
+            headerStyle: {
+                backgroundColor: '#006c80'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                name='pencil'
+                type='font-awesome'
+                iconStyle={styles.stackIcon}
+                onPress={() => navigation.toggleDrawer()}
+            />
+        })
+    }
+);
 
 const ReadersNavigator = createStackNavigator(
     {
@@ -104,7 +128,20 @@ const MainNavigator = createDrawerNavigator(
                     />
                 )
             }
-        }
+        },
+        Demo: { screen: DemoNavigator,
+            navigationOptions: {
+                drawerLabel: 'Become an Author',
+                drawerIcon: ({tintColor}) => (
+                    <Icon
+                        name='pencil'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
     },
     {
         drawerBackgroundColor: '#004b90',

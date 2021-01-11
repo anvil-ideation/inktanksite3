@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import { BOOKS } from '../shared/books';
+import CarouselCards from './CarouselCards';
 
 class Home extends Component {
 
@@ -73,31 +74,52 @@ class Home extends Component {
             return <View />;
         }
 
-
         return (
             <ScrollView>
-                <Text style={{
-                        marginTop: 15,
-                        alignSelf: 'center',
-                        fontWeight: 'bold',
-                        fontStyle: 'italic',
-                        fontSize: 14,
+                <View style={{margin: 10}}>
+                    <Text style={{
+                                marginTop: 15,
+                                alignSelf: 'center',
+                                fontWeight: 'bold',
+                                fontSize: 30,
+                            }}>
+                            Welcome to inkTank!
+                    </Text>
+                    <Text style={{
+                                marginTop: 2,
+                                marginBottom: 10,
+                                alignSelf: 'center',
+                                fontStyle: 'italic',
+                                fontSize: 15,
+                            }}>
+                            Please swipe to learn more about our services
+                    </Text>
+                    <CarouselCards />
+                </View>
+                <View>
+                    <Text style={{
+                            marginTop: 15,
+                            alignSelf: 'center',
+                            fontWeight: 'bold',
+                            fontStyle: 'italic',
+                            fontSize: 14,
+                        }}>
+                        Featured Books This Month:
+                    </Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
                     }}>
-                    Featured Books This Month:
-                </Text>
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                }}>
-                    <RenderItem
-                        item={this.state.books.filter(book => book.featured)[0]}
-                    />
-                    <RenderItem 
-                        item={this.state.books.filter(book => book.featured)[2]}
-                    />
-                    <RenderItem 
-                        item={this.state.books.filter(book => book.featured)[7]}
-                    />
+                        <RenderItem
+                            item={this.state.books.filter(book => book.featured)[0]}
+                        />
+                        <RenderItem 
+                            item={this.state.books.filter(book => book.featured)[2]}
+                        />
+                        <RenderItem 
+                            item={this.state.books.filter(book => book.featured)[7]}
+                        />
+                    </View>
                 </View>
             </ScrollView>
         );
@@ -107,6 +129,10 @@ class Home extends Component {
 const styles = StyleSheet.create({
     featuredTitle: {
         fontSize: 12,
+    },
+    container: {
+        backgroundColor: '#fff',
+        padding: 50
     },
 });
 
