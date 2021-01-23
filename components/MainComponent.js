@@ -42,7 +42,8 @@ const ReadersNavigator = createStackNavigator(
                     type='font-awesome'
                     iconStyle={styles.stackIcon}
                     onPress={() => navigation.toggleDrawer()}
-                />
+                />,
+                title:"Readers"
             })   
         },
         BookInfo: { screen: BookInfo }

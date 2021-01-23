@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from "react-native";
 import Carousel from 'react-native-snap-carousel';
 import CarouselCardItem, { SLIDER_WIDTH, ITEM_WIDTH } from './CarouselCardItem';
-import { Data } from '../shared/data';
+import { homeCarousel } from '../shared/homeCarousel';
 
 const CarouselCards = () => {
     const isCarousel = React.useRef(null)
@@ -13,7 +13,7 @@ const CarouselCards = () => {
             layout="tinder"
             layoutCardOffset={9}
             ref={isCarousel}
-            data={Data}
+            data={homeCarousel}
             renderItem={CarouselCardItem}
             sliderWidth={SLIDER_WIDTH}
             itemWidth={ITEM_WIDTH}

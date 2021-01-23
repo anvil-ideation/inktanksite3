@@ -33,14 +33,15 @@ const CarouselCardItem = ({ item, index }) => {
     },
     header: {
         color: "#222",
-        fontSize: 28,
+        fontSize: 25,
         fontWeight: "bold",
         paddingLeft: 20,
-        paddingTop: 20
+        paddingTop: 20,
+        color: "#006c80"
     },
     body: {
         color: "#222",
-        fontSize: 18,
+        fontSize: 15,
         paddingLeft: 20,
         paddingLeft: 20,
         paddingRight: 20
